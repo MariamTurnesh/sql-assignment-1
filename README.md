@@ -2,11 +2,6 @@
 
 > Analysing a retail store database using SQL — exploring customer purchases, product sales and inventory data.
 
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)
-![SQL](https://img.shields.io/badge/SQL-025E8C?style=for-the-badge&logo=amazondynamodb&logoColor=white)
-
----
-
 ## 📁 Project Structure
 
 | File | Description |
@@ -103,4 +98,8 @@ LIMIT       -- cap the results
 ## 🛠️ Tools Used
 
 - **PostgreSQL** — database engine
-- **pgAdmin** — SQL client
+
+## Author 
+
+Mariam Turnesh
+Data Analyst
