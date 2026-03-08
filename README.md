@@ -1,4 +1,4 @@
-# SQL Retail Database Analysis
+# SQL Retail Database Analysis 
 
 > Analysing a retail store database using SQL — exploring customer purchases, product sales and inventory data.
 
