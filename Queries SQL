@@ -1,0 +1,425 @@
+-- ============================================================
+-- SQL ASSIGNMENT QUERIES
+-- 50 Questions covering SELECT, JOIN, GROUP BY, HAVING,
+-- Subqueries, Date Functions, UNION and more
+-- Database: PostgreSQL | Schema: assignment
+-- ============================================================
+
+
+-- ------------------------------------------------------------
+-- SECTION 1: BASIC SELECT, FILTERING & AGGREGATES (Q1 - Q9)
+-- ------------------------------------------------------------
+
+-- 1. Write a query to select all data from the `Customers` table.
+SELECT * FROM assignment.Customers;
+
+-- 2. Write a query to select the total number of products from the `Products` table.
+select count(*) from assignment.products;
+
+-- 3. Write a query to select the product name and its price from the `Products` table where the price is greater than 500.
+select product_name, price
+from assignment.products
+where price > 500;
+
+-- 4. Write a query to find the average price of all products from the `Products` table.
+select avg(price) as average_price
+from assignment.products;
+
+-- 5. Write a query to find the total sales amount from the `Sales` table.
+select sum(total_amount) as total_sales_amount
+from assignment.sales;
+
+-- 6. Write a query to select distinct membership statuses from the `Customers` table.
+select distinct membership_status
+from assignment.customers;
+
+-- 7. Write a query to concatenate first and last names of all customers and show the result as `full_name`.
+select concat(first_name,' ',last_name) as full_name
+from assignment.customers;
+
+-- 8. Write a query to find all products in the `Products` table where the category is 'Electronics'.
+select product_name, category
+from assignment.products
+where category like 'Electronics';
+
+-- 9. Write a query to find the highest price from the `Products` table.
+select max(price)
+from assignment.products;
+
+
+-- ------------------------------------------------------------
+-- SECTION 2: AGGREGATE FUNCTIONS & GROUP BY (Q10 - Q12)
+-- ------------------------------------------------------------
+
+-- 10. Write a query to count the number of sales for each product from the `Sales` table.
+select product_id, count(quantity_sold) 
+from assignment.sales
+group by product_id;
+
+-- 11. Write a query to find the total quantity sold for each product from the `Sales` table.
+select product_id, sum(quantity_sold) as total_quantity_sold 
+from assignment.sales
+group by product_id;
+
+-- 12. Write a query to find the lowest price of products in the `Products` table.
+select min(price)
+from assignment.products;
+
+
+-- ------------------------------------------------------------
+-- SECTION 3: JOINS (Q13 - Q18)
+-- ------------------------------------------------------------
+
+-- 13. Write a query to find customers who have purchased products with a price greater than 1000.
+select c.first_name, c.last_name, p.product_name, p.price
+from assignment.customers c
+join assignment.sales s
+on c.customer_id = s.customer_id 
+join assignment.products p 
+on s.product_id = p.product_id 
+where p.price > 1000;
+
+-- 14. Write a query to join the `Sales` and `Products` tables on product_id, and select the product name and total sales amount.
+SELECT p.product_id, p.product_name, sum(s.total_amount) as total_sales_amount
+FROM assignment.sales s
+JOIN assignment.products p 
+ON s.product_id = p.product_id
+group by p.product_id;
+
+-- 15. Write a query to join the `Customers` and `Sales` tables and find the total amount spent by each customer.
+SELECT c.first_name, c.last_name, SUM(s.total_amount) AS total_amount_spent
+FROM assignment.customers c
+JOIN assignment.sales s
+ON c.customer_id = s.customer_id
+GROUP BY c.first_name, c.last_name;
+
+-- 16. Write a query to join the `Customers`, `Sales`, and `Products` tables, and show each customer's first and last name, product name, and quantity sold.
+SELECT c.first_name, c.last_name, p.product_name, s.quantity_sold
+FROM assignment.customers c
+JOIN assignment.sales s
+ON s.customer_id = c.customer_id
+JOIN assignment.products p
+ON s.product_id = p.product_id;
+
+-- 17. Write a query to perform a self-join on the `Customers` table and find all pairs of customers who have the same membership status.
+select c1.customer_id as customer1_id,
+       c1.first_name || ' ' || c1.last_name,
+       c2.customer_id as customer2_id,
+       c2.first_name || ' ' || c2.last_name,
+       c1.membership_status
+from assignment.customers c1
+join assignment.customers c2
+on c1.membership_status = c2.membership_status
+and c1.customer_id < c2.customer_id;
+
+-- 18. Write a query to join the `Sales` and `Products` tables, and calculate the total number of sales for each product.
+SELECT p.product_name, sum(s.quantity_sold) AS total_sales
+FROM assignment.sales s
+JOIN assignment.products p 
+ON s.product_id = p.product_id
+GROUP BY p.product_name;
+
+
+-- ------------------------------------------------------------
+-- SECTION 4: FILTERING & CONDITIONS (Q19 - Q21)
+-- ------------------------------------------------------------
+
+-- 19. Write a query to find the products in the `Products` table where the stock quantity is less than 10.
+select product_name, stock_quantity 
+from assignment.products 
+where stock_quantity < 10;
+
+-- 20. Write a query to join the `Sales` table and the `Products` table, and find products with sales greater than 5.
+select p.product_name, s.quantity_sold
+from assignment.sales s 
+join assignment.products p
+ON s.product_id = p.product_id
+where s.quantity_sold > 5;
+
+-- 21. Write a query to select customers who have purchased products that are either in the 'Electronics' or 'Appliances' category.
+SELECT c.first_name, c.last_name, p.category 
+FROM assignment.customers c
+JOIN assignment.sales s
+on c.customer_id = s.customer_id
+JOIN assignment.products p 
+ON s.product_id = p.product_id
+WHERE p.category IN ('Electronics', 'Appliances');
+
+
+-- ------------------------------------------------------------
+-- SECTION 5: GROUP BY, ORDER BY & DATE FILTERING (Q22 - Q24)
+-- ------------------------------------------------------------
+
+-- 22. Write a query to calculate the total sales amount per product and group the result by product name.
+SELECT p.product_name, SUM(s.total_amount) AS total_sales_amount
+FROM assignment.products p
+JOIN assignment.sales s
+ON s.product_id = p.product_id
+GROUP BY p.product_name 
+order by total_sales_amount desc;
+
+-- 23. Write a query to join the `Sales` table with the `Customers` table and select customers who made a purchase in the year 2023.
+select c.first_name, c.last_name, s.sale_date 
+from assignment.sales s
+join assignment.customers c
+on s.customer_id = c.customer_id 
+where extract(year from sale_date) = 2023;
+
+-- 24. Write a query to find the customers with the highest total sales in 2023.
+select c.first_name, c.last_name, s.sale_date, max(s.quantity_sold) as highest_total_sales
+from assignment.customers c 
+join assignment.sales s 
+on c.customer_id = s.customer_id 
+where extract(year from sale_date) = 2023
+group by c.first_name, c.last_name, s.sale_date
+order by highest_total_sales desc;
+
+
+-- ------------------------------------------------------------
+-- SECTION 6: ADVANCED JOINS & AGGREGATES (Q25 - Q30)
+-- ------------------------------------------------------------
+
+-- 25. Write a query to join the `Products` and `Sales` tables and select the most expensive product sold.
+SELECT p.product_name, p.price
+FROM assignment.sales s
+JOIN assignment.products p
+ON s.product_id = p.product_id
+ORDER BY p.price DESC
+LIMIT 1;
+
+-- 26. Write a query to find the total number of customers who have purchased products worth more than 500.
+SELECT count(DISTINCT c.customer_id) AS total_customers
+FROM assignment.sales s
+JOIN assignment.customers c
+ON s.customer_id = c.customer_id
+JOIN assignment.products p 
+ON s.product_id = p.product_id
+WHERE p.price > 500;
+
+-- 27. Write a query to join the `Products`, `Sales`, and `Customers` tables and find the total number of sales made by customers who are in the 'Gold' membership tier.
+SELECT COUNT(distinct s.sale_id) AS total_sales
+FROM assignment.sales s
+JOIN assignment.customers c
+ON s.customer_id = c.customer_id
+JOIN assignment.products p
+ON s.product_id = p.product_id
+WHERE c.membership_status = 'Gold';
+
+-- 28. Write a query to join the `Products` and `Inventory` tables and find all products that have low stock (less than 10).
+select p.product_name, i.stock_quantity
+FROM assignment.products p
+JOIN assignment.inventory i
+ON p.product_id = i.product_id 
+where i.stock_quantity < 10;
+
+-- 29. Write a query to find customers who have purchased more than 5 products and show the total quantity of products they have bought.
+SELECT c.first_name, c.last_name, SUM(s.quantity_sold) AS total_quantity
+FROM assignment.customers c
+JOIN assignment.sales s 
+ON c.customer_id = s.customer_id
+GROUP BY c.first_name, c.last_name
+HAVING SUM(s.quantity_sold) > 5;
+
+-- 30. Write a query to find the average quantity sold per product.
+SELECT p.product_name, avg(s.quantity_sold) AS avg_quantity_sold
+FROM assignment.sales s
+JOIN assignment.products p 
+ON s.product_id = p.product_id
+GROUP BY p.product_name
+order by avg_quantity_sold desc;
+
+
+-- ------------------------------------------------------------
+-- SECTION 7: DATE FUNCTIONS & JOINS (Q31 - Q35)
+-- ------------------------------------------------------------
+
+-- 31. Write a query to find the number of sales made in the month of December 2023.
+SELECT
+EXTRACT(MONTH FROM s.sale_date) AS sale_month,
+COUNT(sale_date) AS total_sales_in_dec
+FROM assignment.sales s
+WHERE EXTRACT(MONTH FROM sale_date) = 12
+GROUP BY EXTRACT(MONTH FROM sale_date);
+
+-- 32. Write a query to find the total amount spent by each customer in 2023 and list the customers in descending order.
+SELECT c.first_name, c.last_name, s.sale_date, SUM(s.total_amount) AS total_spent
+FROM assignment.sales s
+JOIN assignment.customers c 
+ON s.customer_id = c.customer_id
+WHERE s.sale_date BETWEEN '2023-01-01' AND '2023-12-31'
+GROUP BY c.first_name, c.last_name, s.sale_date 
+ORDER BY total_spent DESC;
+
+-- 33. Write a query to find all products that have been sold but have less than 5 units left in stock.
+SELECT p.product_name, i.stock_quantity
+FROM assignment.products p
+JOIN assignment.sales s
+ON p.product_id = s.product_id
+JOIN assignment.inventory i 
+ON s.product_id = i.product_id
+WHERE i.stock_quantity < 5;
+
+-- 34. Write a query to find the total sales for each product and order the result by the highest sales.
+SELECT p.product_name, SUM(s.total_amount) AS total_sales
+FROM assignment.sales s
+JOIN assignment.products p 
+ON s.product_id = p.product_id
+GROUP BY p.product_name
+ORDER BY total_sales DESC;
+
+-- 35. Write a query to find all customers who bought products within 7 days of their registration date.
+select c.first_name, c.last_name, s.sale_date 
+from assignment.customers c
+join assignment.sales s
+on c.customer_id = s.customer_id 
+WHERE (s.sale_date - c.registration_date) <= '7'
+AND s.sale_date >= c.registration_date;
+
+
+-- ------------------------------------------------------------
+-- SECTION 8: UNION, LIKE, BETWEEN & INNER JOIN (Q36 - Q42)
+-- ------------------------------------------------------------
+
+-- 36. Write a query to join the `Sales` table with the `Products` table and filter the results by products priced between 100 and 500.
+SELECT p.product_name, p.price
+FROM assignment.products p
+JOIN assignment.sales s
+ON p.product_id = s.product_id
+WHERE p.price BETWEEN 100 AND 500;
+
+-- 37. Write a query to find the most frequent customer who made purchases from the `Sales` table.
+SELECT c.first_name, c.last_name, COUNT(s.sale_id) AS number_of_purchases
+FROM assignment.customers c
+JOIN assignment.sales s
+ON c.customer_id = s.customer_id
+GROUP BY c.first_name, c.last_name
+ORDER BY number_of_purchases DESC
+LIMIT 1;
+
+-- 38. Write a query to find the total quantity of products sold per customer.
+SELECT c.first_name, c.last_name, SUM(s.quantity_sold) AS total_quantity
+FROM assignment.customers c
+JOIN assignment.sales s
+ON c.customer_id = s.customer_id
+GROUP BY c.first_name, c.last_name
+ORDER BY total_quantity DESC;
+
+-- 39. Write a query to find the products with the highest stock and lowest stock, and display them together in a single result set.
+select product_name, stock_quantity
+from assignment.products 
+where stock_quantity = ( 
+select max(stock_quantity)
+from assignment.products)
+
+union
+
+select product_name, stock_quantity
+from assignment.products 
+where stock_quantity = ( 
+select min(stock_quantity)
+from assignment.products);
+
+-- 40. Write a query to find products whose names contain the word 'Phone' and their total sales.
+select p.product_name, s.total_amount
+from assignment.products p
+join assignment.sales s
+on s.product_id = p.product_id
+where p.product_name like '%phone%';
+
+-- 41. Write a query to perform an `INNER JOIN` between `Customers` and `Sales`, then display the total sales amount and the product names for customers in the 'Gold' membership status.
+SELECT c.first_name, c.last_name, p.product_name, c.membership_status, sum(s.total_amount) as total_sales_amount
+FROM assignment.customers c
+inner JOIN assignment.sales s
+ON c.customer_id = s.customer_id
+JOIN assignment.products p 
+ON s.product_id = p.product_id
+WHERE c.membership_status = 'Gold'
+GROUP BY c.first_name, c.last_name, p.product_name, c.membership_status;
+
+-- 42. Write a query to find the total sales of products by category.
+SELECT p.category, SUM(s.total_amount) AS total_sales
+FROM assignment.products p
+JOIN assignment.sales s
+ON s.product_id = p.product_id
+GROUP BY p.category
+ORDER BY total_sales DESC;
+
+
+-- ------------------------------------------------------------
+-- SECTION 9: DATE GROUPING, LEFT JOIN (Q43 - Q48)
+-- ------------------------------------------------------------
+
+-- 43. Write a query to join the `Products` table with the `Sales` table, and calculate the total sales for each product, grouped by month and year.
+SELECT p.product_name,
+       TO_CHAR(s.sale_date, 'YYYY') AS year,
+       TO_CHAR(s.sale_date, 'Month') AS month,
+       SUM(s.total_amount) AS total_sales
+FROM assignment.sales s
+JOIN assignment.products p
+ON s.product_id = p.product_id
+GROUP BY p.product_name,
+         TO_CHAR(s.sale_date, 'YYYY'),
+         TO_CHAR(s.sale_date, 'Month')
+ORDER BY year, month;
+
+-- 44. Write a query to join the `Sales` and `Inventory` tables and find products that have been sold but still have stock remaining.
+SELECT p.product_name, i.stock_quantity
+FROM assignment.products p
+JOIN assignment.sales s
+ON p.product_id = s.product_id
+JOIN assignment.inventory AS i 
+ON s.product_id = i.product_id;
+
+-- 45. Write a query to find the top 5 customers who have made the highest purchases.
+SELECT c.first_name, c.last_name, SUM(s.total_amount) AS total_purchases
+FROM assignment.customers c 
+JOIN assignment.sales s 
+ON c.customer_id = s.customer_id
+GROUP BY c.first_name, c.last_name
+ORDER BY total_purchases DESC
+LIMIT 5;
+
+-- 46. Write a query to calculate the total number of unique products sold in 2023.
+SELECT COUNT(DISTINCT s.product_id) AS unique_products_sold
+FROM assignment.sales s
+WHERE s.sale_date BETWEEN '2023-01-01' AND '2023-12-31';
+
+-- 47. Write a query to find the products that have not been sold in the last 6 months.
+SELECT p.product_name
+FROM assignment.products p
+LEFT JOIN assignment.sales s 
+ON p.product_id = s.product_id
+AND s.sale_date BETWEEN '2025-09-07' AND '2026-03-07'
+WHERE s.sale_id IS NULL;
+
+-- 48. Write a query to select the products with a price range between $200 and $800, and find the total quantity sold for each.
+SELECT p.product_name, p.price, SUM(s.quantity_sold) AS total_quantity_sold
+FROM assignment.products p
+JOIN assignment.sales s
+ON p.product_id = s.product_id
+WHERE p.price BETWEEN 200 AND 800
+GROUP BY p.product_name, p.price
+ORDER BY p.price;
+
+
+-- ------------------------------------------------------------
+-- SECTION 10: FINAL COMPLEX QUERIES (Q49 - Q50)
+-- ------------------------------------------------------------
+
+-- 49. Write a query to find the customers who spent the most money in the year 2023.
+SELECT c.first_name, c.last_name, SUM(s.total_amount) AS total_spent
+FROM assignment.customers c
+JOIN assignment.sales s
+ON s.customer_id = c.customer_id
+WHERE s.sale_date BETWEEN '2023-01-01' AND '2023-12-31'
+GROUP BY c.first_name, c.last_name
+ORDER BY total_spent DESC;
+
+-- 50. Write a query to select the products that have been sold more than 100 times and have a price greater than 200.
+SELECT p.product_name, p.price, COUNT(s.sale_id) AS total_sold
+FROM assignment.products p
+JOIN assignment.sales s 
+ON p.product_id = s.product_id
+WHERE p.price > 200
+GROUP BY p.product_name, p.price
+HAVING COUNT(s.sale_id) > 100;
