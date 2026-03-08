@@ -1,8 +1,8 @@
-# 🛒 SQL Retail Database Analysis
+# SQL Retail Database Analysis
 
 > Analysing a retail store database using SQL — exploring customer purchases, product sales and inventory data.
 
-## 📁 Project Structure
+## Project Structure
 
 | File | Description |
 |---|---|
@@ -11,7 +11,7 @@
 
 ---
 
-## 🗄️ Database Structure
+## Database Structure
 
 The **assignment** schema contains 4 tables:
 
@@ -34,7 +34,7 @@ customers ──── customer_id ────► sales ◄──── product
 
 ---
 
-## 📋 Topics Covered
+## Topics Covered
 
 ### 🔹 Basic SELECT
 - Selecting all data, specific columns and filtered rows
@@ -73,7 +73,7 @@ customers ──── customer_id ────► sales ◄──── product
 
 ---
 
-## 🧠 Key Concepts
+## Key Concepts
 
 ```sql
 -- The clause order every query follows
@@ -95,11 +95,12 @@ LIMIT       -- cap the results
 
 ---
 
-## 🛠️ Tools Used
+## Tools Used
 
 - **PostgreSQL** — database engine
 
 ## Author 
 
-Mariam Turnesh
+**Mariam Turnesh**
+
 Data Analyst
